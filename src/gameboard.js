@@ -16,6 +16,7 @@ export const Gameboard = () => {
 
     const ships = [];
     const missedShots = [];
+    const accurateShots = [];
 
     const placeShip = (x, y, length, orientation) => {
         validatePlaceShipParams(x, y, length, orientation);
@@ -27,9 +28,9 @@ export const Gameboard = () => {
         // place a ship
         for (let i = 0; i < length; i++) {
             if (orientation === "horizontal") {
-                board[x+i][y] = newShip
-            } else {
                 board[x][y+i] = newShip
+            } else {
+                board[x+i][y] = newShip
             }
         }
 
@@ -39,10 +40,11 @@ export const Gameboard = () => {
         validateCoordinates(x,y);
         // check hit
         const cell = board[x][y];
-        if (!cell) {
+        if (cell === null) {
             missedShots.push([x, y]);
             return false;
         } else {
+            accurateShots.push([x,y]);
             cell.hit();
             return true;
         }
@@ -60,8 +62,11 @@ export const Gameboard = () => {
 
     const getMissedShots = () => missedShots;
 
+    const getBoard = () => board;
 
-    return { placeShip, receiveAttack, getMissedShots, isSunk, allSunk };
+    const getAccurateShots = () => accurateShots;
+
+    return { placeShip, receiveAttack, getMissedShots, isSunk, allSunk, getBoard, getAccurateShots };
 }
 
 
@@ -92,12 +97,19 @@ const validatePlaceShipParams = (x, y, length, orientation) => {
 
     //chceck if there is enough space for a ship on a board 
     if (orientation === 'horizontal') {
-        if ((x+length) > 9) {
+        if ((y+length-1) > 9) {
             throw new TypeError("Not enough space for the ship")
         }
     } else {
-        if ((y+length) > 9) {
+        if ((x+length-1) > 9) {
             throw new TypeError("Not enough space for the ship")
         }
     }
 }
+
+
+
+
+//Change to collect informations about missedShots in board
+//Add a function to return board
+//Add a function to collect and return goodShots

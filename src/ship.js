@@ -19,3 +19,4 @@ export const Ship = (length) => {
 
     return { hit, isSunk };
 }
+

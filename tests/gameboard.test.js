@@ -34,16 +34,16 @@ describe("Gameboard", () => {
   describe("Attacks (hits/misses)", () => {
     beforeEach(() => {
       gb.placeShip(0, 0, 4, "horizontal");
-      gb.placeShip(9, 0, 3, "vertical");
+      gb.placeShip(6, 0, 3, "vertical");
     });
 
     test.each([
       [0, 0, true],
-      [1, 0, true],
+      [1, 0, false],
       [1, 1, false],
-      [9, 0, true],
+      [8, 0, true],
       [9, 5, false],
-      [9, 2, true]
+      [9, 2, false]
     ])(
       "shot on (%i, %i) => hit? %p",
       (x, y, expected) => {
@@ -71,7 +71,7 @@ describe("Gameboard", () => {
       gb.placeShip(9, 0, 1, "vertical");    
 
       gb.receiveAttack(0,0);
-      gb.receiveAttack(1,0);
+      gb.receiveAttack(0,1);
       gb.receiveAttack(9,0);
 
       expect(gb.isSunk(0,0)).toBe(true);  
@@ -114,7 +114,7 @@ describe("Gameboard", () => {
       gb.placeShip(9, 0, 1, "vertical");
 
       gb.receiveAttack(0,0);
-      gb.receiveAttack(1,0);
+      gb.receiveAttack(0,1);
       gb.receiveAttack(9,0);
 
       expect(gb.allSunk()).toBe(true);
@@ -161,7 +161,7 @@ describe("Gameboard", () => {
   
     it('handles if there is no place for ship', () => {
       const noSpaceTestCases = [
-        [9, 0, 3, 'horizontal'], [9, 9, 3, 'horizontal'], [1, 9, 3, 'hsdl']
+        [0, 9, 3, 'horizontal'], [9, 9, 3, 'horizontal'], [9, 0, 3, 'hsdl']
       ];
       noSpaceTestCases.forEach(([x, y, length, orientation]) => {
         expect(() => gb.placeShip(x, y, length, orientation)).toThrow(TypeError);

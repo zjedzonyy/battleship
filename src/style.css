@@ -63,9 +63,21 @@ body {
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     cursor: pointer;
-    transition: background-color 0.3s;  /* Animacja zmiany koloru */
+    transition: background-color 0.2s; 
   }
   
   .cell:hover {
     background-color: #ddd;
   }
+
+.cell-missed-hit {
+    background-color: blue;
+}
+
+.cell-accurate-hit {
+    border-color: rgb(253, 0, 0);
+}
+
+.cell-ship {
+    background-color: #ffd700;
+}
