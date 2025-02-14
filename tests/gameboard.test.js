@@ -120,4 +120,83 @@ describe("Gameboard", () => {
       expect(gb.allSunk()).toBe(true);
     });
   });
+
+
+  describe('prevent impermissible placeShip()', () => {
+    it('handles out-of-bounds coordinates', () => {
+      const invalidCoordinates = [
+        [-1, -4], [1, -9], [-3, -9], [10, 9], [0, 10], [14, 21]
+      ];
+      invalidCoordinates.forEach(([x, y]) => {
+        expect(() => gb.placeShip(x, y, 2, 'horizontal')).toThrow(TypeError);
+      });
+    });
+  
+    it('handles decimals in coordinates and length', () => {
+      const invalidValues = [
+        [1.5, 2, 2], [2, 3.3, 2], [-1.3, 3.3, 2], [0, 0, 2.137]
+      ];
+      invalidValues.forEach(([x, y, length]) => {
+        expect(() => gb.placeShip(x, y, length, 'horizontal')).toThrow(TypeError);
+      });
+    });
+  
+    it('handles wrong types', () => {
+      const invalidTypes = [
+        ['1', -4, 2], [1, '-4', 2], [NaN, 4, 2], [1, undefined, 2], [0, 0, 'asdf']
+      ];
+      invalidTypes.forEach(([x, y, length]) => {
+        expect(() => gb.placeShip(x, y, length, 'horizontal')).toThrow(TypeError);
+      });
+    });
+  
+    it('handles out-of-bounds length', () => {
+      const invalidLengths = [
+        [0, 1, 0], [0, 1, 6]
+      ];
+      invalidLengths.forEach(([x, y, length]) => {
+        expect(() => gb.placeShip(x, y, length, 'horizontal')).toThrow(TypeError);
+      });
+    });
+  
+    it('handles if there is no place for ship', () => {
+      const noSpaceTestCases = [
+        [9, 0, 3, 'horizontal'], [9, 9, 3, 'horizontal'], [1, 9, 3, 'hsdl']
+      ];
+      noSpaceTestCases.forEach(([x, y, length, orientation]) => {
+        expect(() => gb.placeShip(x, y, length, orientation)).toThrow(TypeError);
+      });
+    });
+  });
+  
+  describe('prevent impermissible receiveAttack() and isSunk()', () => {
+    it('handles out-of-bounds coordinates', () => {
+      const invalidCoordinates = [
+        [10, 0], [0, -4]
+      ];
+      invalidCoordinates.forEach(([x, y]) => {
+        expect(() => gb.receiveAttack(x, y)).toThrow(TypeError);
+      });
+    });
+  
+    it('handles decimals', () => {
+      const invalidCoordinates = [
+        [0, 4.4], [1.1, 4]
+      ];
+      invalidCoordinates.forEach(([x, y]) => {
+        expect(() => gb.receiveAttack(x, y)).toThrow(TypeError);
+      });
+    });
+  
+    it('handles wrong types', () => {
+      const invalidCoordinates = [
+        [undefined, 4], [1, NaN], [1, 'asdf'], [false, 2]
+      ];
+      invalidCoordinates.forEach(([x, y]) => {
+        expect(() => gb.receiveAttack(x, y)).toThrow(TypeError);
+      });
+    });
+  });
+  
+
 });

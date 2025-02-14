@@ -41,5 +41,23 @@ describe('Ship logic', () => {
       expect(s.isSunk()).toBe(expected);
     }
   );
+
+  describe('prevent from impermissible inputs', () => {
+
+    it('handles out-of-bounds length', () => {
+      const invalidLengths = [0, -1, 6, 21];
+
+      invalidLengths.forEach((x) => {
+        expect(() => Ship(x)).toThrow(TypeError);
+      });
+    })
+
+    it('handles wrong types', () => {
+      const invalidTypes = ['1', NaN, undefined, false, 0.21];
+      invalidTypes.forEach((x) => {
+        expect(() => Ship(x)).toThrow(TypeError);
+      });
+    })
+  })
 });
 
