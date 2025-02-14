@@ -58,6 +58,7 @@ describe('Ship logic', () => {
         expect(() => Ship(x)).toThrow(TypeError);
       });
     })
+    
   })
 });
 
