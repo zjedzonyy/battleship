@@ -106,10 +106,3 @@ const validatePlaceShipParams = (x, y, length, orientation) => {
         }
     }
 }
-
-
-
-
-//Change to collect informations about missedShots in board
-//Add a function to return board
-//Add a function to collect and return goodShots
