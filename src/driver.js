@@ -3,9 +3,13 @@ import { Gameboard } from "./gameboard";
 import { Player } from "./player";
 import { createBoard } from "./createGameboard.js"
 import { getCPUBoardInfo, getPlayerBoardInfo } from "./renderGameboard.js";
-import { attackPlayer, attackCPU } from "./listeners.js";
+import { attackPlayer, attackCPU, startGameListener } from "./listeners.js";
 import "./style.css"
-
+// 1x * * * * *
+// 1x * * * *
+// 2x * * *
+// 2x * *
+// 1x *
 
 createBoard('player-board', 10);
 createBoard('cpu-board', 10)
@@ -16,70 +20,78 @@ const cpu = Player();
 player.setIsCPU(false);
 cpu.setIsCPU(true);
 
-player.board.placeShip(0, 0, 2,'horizontal')
-player.board.placeShip(8, 7, 1,'vertical')
-
-cpu.board.placeShip(0,0,5,'horizontal')
-cpu.board.placeShip(0,9,5,'vertical')
-
-//row 0, column 2
-player.board.receiveAttack(0,2);
-cpu.board.receiveAttack(0,2)
-//row 1, column 0
-player.board.receiveAttack(1,0);
-cpu.board.receiveAttack(5,5)
-// row 0, column 9 
-player.board.receiveAttack(0,9)
-
-// row 0, column 2
-player.board.receiveAttack(0,1);
-
 getPlayerBoardInfo(player);
 getCPUBoardInfo(cpu);
 
-let currentPlayer = 'human';
-function main() {
+startGameListener(startGame);
 
-    //startGame()
-   
-    //GAME LOGIC
-    attackCPU(checkTurnThenAttack)
-    //human attack -> changeTurn -> cpuAttacks
-}
+function startGame() {
 
-main()
+    let game = gameState();
+    attackCPU(handleHumanAttack)
 
+    function handleHumanAttack(x,y) {
+        if (game.getCurrentPlayer() !== 'human') {
+            return;
+        }
+        cpu.board.receiveAttack(x,y)
+        getCPUBoardInfo(cpu);
+        if (cpu.board.doesHit(x,y) === false) {
+            game.switchTurn()
+            attackPlayer(handleCPUAttack)
+        }
+        checkWinner(cpu, player)
+    }
 
-
-function switchTurn() {
-    if (currentPlayer === 'human') {
-        currentPlayer === 'cpu';
-    } else {
-        currentPlayer === 'human';
+    function handleCPUAttack(x,y) {
+        if (game.getCurrentPlayer() !== 'cpu') {
+            return;
+        }
+        player.board.receiveAttack(x,y)
+        getPlayerBoardInfo(player);
+        if (player.board.doesHit(x,y) === false) {
+            game.switchTurn()
+        }
+        checkWinner(cpu, player)
+        attackPlayer(handleCPUAttack)
     }
 }
 
-// function checkTurnThenAttack(x,y) {
-//     if (currentPlayer !== 'human') {
-//         return;
-//     }
-//     let acc = parseInt(cpu.board.getMissedShots().length)
-//     console.log(acc)
-
-//     do {
-//         cpu.board.receiveAttack(x,y)
-//         getCPUBoardInfo(cpu)
-//         console.log(cpu.board.getMissedShots().length)
-//     } while (acc !== parseInt(cpu.board.getMissedShots().length))
-    
-//     switchTurn();
-
-// }
+//DODAWANIE STATKOW 
+// ROZPOCZECIE GRY
+//refactor kodu
+//UI
 
 
 
 
+function gameState() {
+    let currentPlayer = 'human';
+    const switchTurn = () => {
+        if (currentPlayer === 'human') {
+            currentPlayer = 'cpu';
+        } else {
+            currentPlayer = 'human';
+        }
+    }
+    const canHumanAct = () => {
+        return currentPlayer === 'human' ? true : false
+    }
 
+    function getCurrentPlayer() {
+        return currentPlayer;
+      }
+
+    return {getCurrentPlayer, switchTurn, canHumanAct}
+}
+
+function checkWinner(cpu, player) {
+    if (player.board.allSunk() === true) {
+        alert("CPU")
+    } else if (cpu.board.allSunk() === true) {
+        alert("PLAYER")
+    }
+}
 
 
 

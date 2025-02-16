@@ -1,41 +1,9 @@
 import { getPlayerBoardInfo, getCPUBoardInfo } from "./renderGameboard";
 
-// Add listener (attack -> refresh board)-> remove listener
-export function attackOnCPU(callback, callback2, cpu, player) {
-    const cellsCPU = document.querySelectorAll('#cpu-board > .cell');
-    //TEMP
-    const cellsCPUShips = document.querySelectorAll('#cpu-board > .cell-ship')
-
-    function handleClick(e) {
-      const cell = e.currentTarget;
-      const x = parseInt(cell.dataset.row);
-      const y = parseInt(cell.dataset.col);
-  
-      callback(x, y);
-      getCPUBoardInfo(cpu);
-      //check winner
-      checkWinner(cpu, player)
-      attackPlayer(callback2, player)
-
-  
-      cell.removeEventListener('click', handleClick);
-    }
-  
-    cellsCPU.forEach(cell => {
-      cell.addEventListener('click', handleClick);
-    });
-
-    //TEMP
-    cellsCPUShips.forEach(cell => {
-        cell.addEventListener('click', handleClick);
-    });
-  }
-
 export function attackCPU(callback) {
     const cellsCPU = document.querySelectorAll('#cpu-board > .cell');
     //TEMP
     const cellsCPUShips = document.querySelectorAll('#cpu-board > .cell-ship')
-
     function handleClick(e) {
       const cell = e.currentTarget;
       const x = parseInt(cell.dataset.row);
@@ -43,7 +11,6 @@ export function attackCPU(callback) {
     
       //TUTAJ CALLBACK MUSI BYC FUNKCJA KTORA SPRAWDZA CURRENTPLAYER I DOPIERO WYWOLUJE ATTACK
       callback(x, y);
-  
       cell.removeEventListener('click', handleClick);
     }
   
@@ -57,14 +24,14 @@ export function attackCPU(callback) {
     });
 }
 
-export function attackPlayer(callback, player) {
+export function attackPlayer(callback) {
     const cell = findAllowedCell('#player-board')
 
     cell.setAttribute('allowed', 'no')
     const x = parseInt(cell.dataset.row);
     const y = parseInt(cell.dataset.col);
     callback(x,y)
-    getPlayerBoardInfo(player);
+
 }
 
 function findAllowedCell(boardSelector) {
@@ -91,10 +58,17 @@ function generateRandomCoordinates() {
     return [x, y]
 }
   
-function checkWinner(cpu, player) {
-    if (player.board.allSunk() === true) {
-        alert("CPU")
-    } else if (cpu.board.allSunk() === true) {
-        alert("PLAYER")
-    }
+
+export function startGameListener(callback) {
+    const start = document.getElementById('start-btn')
+    start.addEventListener('click', (e) => {
+        e.preventDefault();
+        callback();
+        start.innerHTML = 'NEW GAME';
+    })
+}
+
+// listener na planszy do przekazania x,y i ustawienia statku
+export function placeShip(callback) {
+    
 }

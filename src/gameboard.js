@@ -56,6 +56,15 @@ export const Gameboard = () => {
         return cell.isSunk();
     }
 
+    const doesHit = (x, y) => {
+        validateCoordinates(x,y);
+        const cell = board[x][y];
+        if (!cell) {
+            return false;
+        }
+        return cell.doesHit();
+    }
+
     const allSunk = () => {
         return ships.every(ship => ship.isSunk())
     }
@@ -66,7 +75,8 @@ export const Gameboard = () => {
 
     const getAccurateShots = () => accurateShots;
 
-    return { placeShip, receiveAttack, getMissedShots, isSunk, allSunk, getBoard, getAccurateShots };
+
+    return { placeShip, receiveAttack, getMissedShots, isSunk, allSunk, getBoard, getAccurateShots, doesHit };
 }
 
 

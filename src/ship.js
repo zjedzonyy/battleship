@@ -17,6 +17,10 @@ export const Ship = (length) => {
         return damage >= length ? true : false;
     }
 
-    return { hit, isSunk };
+    const doesHit = () => {
+        return true;
+    }
+
+    return { hit, isSunk, doesHit };
 }
 
