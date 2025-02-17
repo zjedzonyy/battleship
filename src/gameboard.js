@@ -19,7 +19,7 @@ export const Gameboard = () => {
     const accurateShots = [];
 
     const placeShip = (x, y, length, orientation) => {
-        validatePlaceShipParams(x, y, length, orientation);
+        validatePlaceShipParams(x, y, length, orientation, board);
 
         // save informations about ships outside of this function
         const newShip = Ship(length);
@@ -91,7 +91,7 @@ const validateCoordinates = (x, y) => {
     }
 };
 
-const validatePlaceShipParams = (x, y, length, orientation) => {
+const validatePlaceShipParams = (x, y, length, orientation, board) => {
     if (typeof x !== "number" || typeof y !== "number" || typeof length !== "number" || Number.isNaN(x) || Number.isNaN(y)
         || Number.isNaN(length) || !Number.isSafeInteger(x) || !Number.isSafeInteger(y) || !Number.isSafeInteger(length)) {
         throw new TypeError("Coordinates and legth must be numbers")
@@ -115,4 +115,42 @@ const validatePlaceShipParams = (x, y, length, orientation) => {
             throw new TypeError("Not enough space for the ship")
         }
     }
+
+    for (let i = 0; i < length; i++) {
+        const cx = (orientation === 'horizontal') ? x : x + i;
+        const cy = (orientation === 'horizontal') ? y + i : y;
+
+        if (!isCellFreeAndNoNeighbours(cx, cy, board)) {
+            throw new TypeError("Ships can't be that close to each other")
+        }
+    }
+
+    function isCellFreeAndNoNeighbours(cx, cy, board) {
+        const size = 10;
+        for (let j = -1; j <= 1; j++) {
+            for (let k = -1; k <= 1; k++) {
+                const nx = cx + j;
+                const ny = cy + k;
+                if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                    if (board[nx][ny] !== null) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true;
+
+    }
 }
+
+//1 Rozbudowanie gameboard o sprawdzenie czy mozna klasc statki obok siebie/na sobie
+//2. Zrobienie testow dla 1)
+//3. Zrobienie mozliwosci wstawiania statkwo przez user
+//4. Dodanie randomowoego umieszczania statkow przez CPU
+//5. Poprawienie UI
+//6.
+// PREVENT FROM STARTING GAME BEFORE PLAYER PLACE ALL OF HIS SHIPS
+//   prevent ale potem nie chce zaczac gry -> chyba usuwa listener z btn start
+
+
+//POPRAW SIZE DO SPRAWDZANIA (JEGO SCOPE POWIEKSZYC I MODULARNOSC, zeby mozna go bylo zmienic w jednym miejscu)

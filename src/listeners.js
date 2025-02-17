@@ -59,16 +59,67 @@ function generateRandomCoordinates() {
 }
   
 
-export function startGameListener(callback) {
+export function startGameListener(callback, callback2) {
     const start = document.getElementById('start-btn')
-    start.addEventListener('click', (e) => {
-        e.preventDefault();
-        callback();
-        start.innerHTML = 'NEW GAME';
-    })
+
+    function handleClick(e) {
+        const btn = e.currentTarget
+
+        const ok1 = callback();
+        if (!ok1) {
+            return;
+        }
+
+        const ok2 = callback2();
+        if (!ok2) {
+            return;
+        }
+ 
+        //If both succeed
+        btn.innerHTML = 'NEW GAME';
+        btn.removeEventListener('click', handleClick);
+        }
+
+    start.addEventListener('click', handleClick);
+
+}
+function test(as, eve) {
+    as.innerHTML = 'NEW GAME'
+    as.removeEventListener('click', eve)
 }
 
 // listener na planszy do przekazania x,y i ustawienia statku
-export function placeShip(callback) {
-    
+export function placeShip(callback, callback2, callback3) {
+    const cells = document.querySelectorAll('#player-board > .cell');
+    cells.forEach(cell => {
+        cell.addEventListener('click', (e) => {
+            //call 1 - pobierz length
+            const length = callback2();
+            if (!length) {
+                return;
+            }
+
+            const x = parseInt(cell.getAttribute('data-row'));
+            const y = parseInt(cell.getAttribute('data-col'));
+
+            //call 2 - pobierz orientation
+            const orientation = callback3();
+            callback(x,y,length,orientation)
+
+        })
+    })
+}
+
+//listener do zmiany orientacji dla placeShip w UI
+export function changeOrientation(callback) {
+    const btn = document.getElementById('orientation');
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        callback();
+        if (btn.innerHTML === 'HORIZONTAL') {
+            btn.innerHTML = "VERTICAL";
+        } else {
+            btn.innerHTML = 'HORIZONTAL';
+        }
+    })
 }

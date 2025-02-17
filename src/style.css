@@ -1,89 +1,188 @@
 @import "modern-normalize";
 
 :root {
-  --primary-color: #f4f4f4; /* Light Gray */
-  --secondary-color: #1c1c1c; /* Dark Gray */
-  --accent-color: #ff6f61; /* Coral */
-  --highlight-color: #ffd700; /* Gold */
-  --text-primary: #ffffff; /* White */
-  --text-secondary: #333333; /* Dark Gray */
-  --background-light: #e8e8e8; /* Very Light Gray */
+  --background-color: #9c8787;
+  --primary-color: #3f2e49;
+  --board-color: #cce2ff;
+  --board-color-2: #9ac4fc;
+  --grid-border-color: #f3f3f3;
+  --btn-color: #ffaec9;
+  --btnAfter-color: #faa4c1;
+  --text-primary: #ffffff;
+  --text-secondary: #eaeaea;
+  --background-light: #e8e8e8;
+  --ship-color: #aefac4;      
+  --missedShot-color: #ffe7ba; 
+  --accurateShot-color: #ffb3c7; 
 }
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    background-color: rgb(107, 98, 85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--background-color);
+  background: linear-gradient(160deg, #9c8787 0%, #b09ca0 100%);
+  color: var(--text-primary);
 }
 
 #box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column;
-    height: 90vh;
-    min-height: 800px;
-    width: 60vw;
-    min-width: 1000px;
-    background-color: rgb(225, 231, 236);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  height: 80vh;
+  min-height: 600px;
+  width: 60vw;
+  min-width: 1000px;
+  background-color: var(--primary-color);
 }
 
 #game {
-    background-color: #333333;
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: column;
+  margin: 1rem;
+}
+
+.gameboard {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    min-width: 400px;
     flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    align-content: center;
+    
 }
 
-.board{
-    display: grid;
-    grid-template-columns: repeat(10, 30px);
-    grid-template-rows: repeat(10, 30px);
-    margin: 0 auto;
-    max-width: 320px;
-    background-color: #ff6f61;
+#button-container,
+#game-controller {
+    margin-top: 1rem; 
+  }
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, 35px);
+  grid-template-rows: repeat(10, 35px);
+  margin: 0 auto;
+  max-width: 350px;
+  background-color: var(--board-color-2);
 }
 
-#ui{
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-content: space-around;
+#ui {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-content: space-around;
 }
 
 .cell {
-    width: 30px;
-    height: 30px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    transition: background-color 0.2s; 
-  }
-  
-  .cell:hover {
-    background-color: #ddd;
-  }
+  width: 35px;
+  height: 35px;
+  background-color: var(--board-color);
+  border: 1px solid var(--grid-border-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cell:hover {
+  background-color: var(--board-color-2);
+}
 
 .cell-missed-hit {
-    background-color: blue;
+  background-color: var(--missedShot-color);
 }
 
 .cell-accurate-hit {
-    border-color: rgb(253, 0, 0);
+  border-color: var(--accurateShot-color);
 }
 
 .cell-ship {
-    background-color: #ffd700;
+  background-color: var(--ship-color);
 }
 
 .cell[allowed='no'] {
-    pointer-events: none;
-    cursor: not-allowed;
+  pointer-events: none;
+  cursor: not-allowed;
 }
-/* allowed=yes/no */
+
+button {
+  background-color: var(--btn-color);
+  color: var(--text-secondary);
+}
+
+header,
+footer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.button-19 {
+  appearance: button;
+  background-color: var(--btn-color);
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-block;
+  font-family: din-round,sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  line-height: 20px;
+  margin: 0;
+  outline: none;
+  overflow: visible;
+  padding: 13px 16px;
+  text-align: center;
+  text-transform: uppercase;
+  touch-action: manipulation;
+  transform: translateZ(0);
+  transition: filter .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.button-19:after {
+  background-clip: padding-box;
+  background-color: var(--btnAfter-color);
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  bottom: -4px;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: -1;
+}
+
+.button-19,
+.button-19:focus {
+  user-select: auto;
+}
+
+.button-19:hover:not(:disabled) {
+  filter: brightness(1.1);
+  -webkit-filter: brightness(1.1);
+}
+
+.button-19:disabled {
+  cursor: auto;
+}
+
+.button-19:active {
+  border-width: 4px 0 0;
+  background: none;
+}

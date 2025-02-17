@@ -167,6 +167,17 @@ describe("Gameboard", () => {
         expect(() => gb.placeShip(x, y, length, orientation)).toThrow(TypeError);
       });
     });
+
+    it('handles if the ship is to close to another', () => {
+      gb.placeShip(5, 2, 5, 'horizontal')
+
+      const testCases = [
+        [4, 2, 5, 'horizontal'], [6, 2, 6, 'horizontal'], [4, 1, 5, 'v'], [3, 7, 2, 'v']
+      ]
+      testCases.forEach(([x, y, length, orientation]) => {
+        expect(() => gb.placeShip(x, y, length, orientation)).toThrow(TypeError);
+      });
+    })
   });
   
   describe('prevent impermissible receiveAttack() and isSunk()', () => {
