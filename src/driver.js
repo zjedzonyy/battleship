@@ -3,7 +3,7 @@ import { Gameboard } from "./gameboard";
 import { Player } from "./player";
 import { createBoard } from "./createGameboard.js"
 import { getCPUBoardInfo, getPlayerBoardInfo } from "./renderGameboard.js";
-import { attackPlayer, attackCPU, startGameListener, changeOrientation, placeShip } from "./listeners.js";
+import { attackCPU, startGameListener, changeOrientation, placeShip, randomBoardListener } from "./listeners.js";
 import "./style.css"
 // 1x * * * * *
 // 1x * * * *
@@ -28,7 +28,7 @@ function main() {
     handlePlaceShip()
     //Układa statki u CPU
     startGameListener(startGame, populateCPUBoard);
-  
+    randomBoardListener(populatePlayerBoard)
 
 }
 
@@ -47,6 +47,21 @@ function populateCPUBoard() {
     return true;
 }
 
+function populatePlayerBoard() {
+    if (shipsLength.length > 7) {
+        return false;
+    }
+
+    let i = 0;
+    do {
+        randomPlaceShipPlayer()
+        i++;
+    } while (i <= 6);
+
+    getPlayerBoardInfo(player);
+    return true;
+}
+
 const shipsLengthCPU = [5, 4, 3, 3, 2, 2, 1];
 
 //function to place ship for cpu
@@ -62,6 +77,27 @@ function randomPlaceShip() {
             cpu.board.placeShip(x, y, length, orientation);
             // Jeśli się udało, ustawiamy placed na true i wychodzimy z pętli
             shipsLengthCPU.shift();
+            placed = true;
+          } catch (err) {
+            // Gdy placeShip rzuci błąd (np. brak miejsca),
+            // ignorujemy i ponawiamy losowanie w kolejnej iteracji pętli
+            placed = false;
+          }
+    } while (!placed)
+}
+
+function randomPlaceShipPlayer() {
+    let placed = false;
+    do {
+        const [x, y] = generateRandomCoordinates()
+        // const y = Math.floor(Math.random() * 10);
+        const length = shipsLength[0];
+        const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+
+        try {
+            player.board.placeShip(x, y, length, orientation);
+            // Jeśli się udało, ustawiamy placed na true i wychodzimy z pętli
+            shipsLength.shift();
             placed = true;
           } catch (err) {
             // Gdy placeShip rzuci błąd (np. brak miejsca),
@@ -96,6 +132,7 @@ async function startGame() {
         if (game.getCurrentPlayer() !== 'cpu') {
             return;
         }
+
         player.board.receiveAttack(x,y)
         getPlayerBoardInfo(player);
         if (player.board.doesHit(x,y) === false) {
@@ -186,13 +223,47 @@ function getOrientation() {
     return orientation;
 }
 
-// ADD RANDOM BOARD GENERATOR FOR A PLAYER
 
 // chyba jest problem ze random coordinates jak strzela to rzadko znajduje cos co moze strzelic
 // i wpada w infinity loop - trzeba to poprawic
 
 // usun btn albo rozpocznij gre od nowa logika
 
-//refactor kodu
+//REFACTOR KODU!!!!!!!! ZA DUZO POWTARZAJACEGO SIE KODU!
+// ODDZIELIC LOGIKE!!!
 //UI - mozna dodac legende
 
+
+
+
+
+//genrate random attack
+function attackPlayer(callback) {
+    const [x,y] = findAllowedCell()
+    callback(x,y)
+
+}
+
+function findAllowedCell() {
+    let illegalShots = player.board.getMissedShots();
+    let illegalShots2 = player.board.getAccurateShots();
+    let cell;
+    do {
+      const [x, y] = generateRandomCoordinates();
+      cell = [x, y];
+    } while (
+      illegalShots.some(shot => shot[0] === cell[0] && shot[1] === cell[1]) ||
+      illegalShots2.some(shot => shot[0] === cell[0] && shot[1] === cell[1])
+    );
+    
+    
+    return cell;
+}
+
+
+function generateRandomCoordinates() {
+    const x = Math.floor(Math.random() * 10);
+    const y = Math.floor(Math.random() * 10);
+
+    return [x, y]
+}

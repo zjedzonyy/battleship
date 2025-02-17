@@ -23,41 +23,7 @@ export function attackCPU(callback) {
         cell.addEventListener('click', handleClick);
     });
 }
-
-export function attackPlayer(callback) {
-    const cell = findAllowedCell('#player-board')
-
-    cell.setAttribute('allowed', 'no')
-    const x = parseInt(cell.dataset.row);
-    const y = parseInt(cell.dataset.col);
-    callback(x,y)
-
-}
-
-function findAllowedCell(boardSelector) {
-    let cell;
-    let attrValue;
-
-    do {
-        const [x,y] = generateRandomCoordinates();
-        cell = document.querySelector(`${boardSelector} > [data-row="${x}"][data-col="${y}"]`);
-        if (!cell) {
-            continue;
-        }
-        attrValue = cell.getAttribute('allowed')
-    } while (attrValue === 'no')
-    
-    return cell;
-}
-
-
-function generateRandomCoordinates() {
-    const x = Math.floor(Math.random() * 10);
-    const y = Math.floor(Math.random() * 10);
-
-    return [x, y]
-}
-  
+ 
 
 export function startGameListener(callback, callback2) {
     const start = document.getElementById('start-btn')
@@ -122,4 +88,17 @@ export function changeOrientation(callback) {
             btn.innerHTML = 'HORIZONTAL';
         }
     })
+}
+
+//listener random players board generate
+export function randomBoardListener(callback) {
+    const btn = document.getElementById('random-generate');
+
+    function handleClick(e) {
+        const btn = e.currentTarget;
+        callback();
+        console.log("SIEMA")
+        btn.removeEventListener('click', handleClick);
+    }
+    btn.addEventListener('click', handleClick);
 }
