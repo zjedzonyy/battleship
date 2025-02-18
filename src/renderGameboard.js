@@ -12,7 +12,7 @@ export function getPlayerBoardInfo(player) {
    * @param {Object} cpu - The CPU player object.
    */
   export function getCPUBoardInfo(cpu) {
-    updateBoardDisplay(cpu, "cpu");
+    updateShotsDisplay(cpu, "cpu");
   }
   
   /**
@@ -25,6 +25,7 @@ export function getPlayerBoardInfo(player) {
     updateShipsDisplay(player, boardId);
     updateShotsDisplay(player, boardId);
   }
+
   
   /**
    * Iterates through the game board array and updates the UI for cells that contain a ship.

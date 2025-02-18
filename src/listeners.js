@@ -2,7 +2,7 @@
 export function attackCPU(callback) {
     const cellsCPU = document.querySelectorAll('#cpu-board > .cell');
     //TEMP
-    const cellsCPUShips = document.querySelectorAll('#cpu-board > .cell-ship')
+    // const cellsCPUShips = document.querySelectorAll('#cpu-board > .cell-ship')
 
     function handleClick(e) {
       const cell = e.currentTarget;
@@ -19,9 +19,9 @@ export function attackCPU(callback) {
     });
 
     //TEMP
-    cellsCPUShips.forEach(cell => {
-        cell.addEventListener('click', handleClick);
-    });
+    // cellsCPUShips.forEach(cell => {
+    //     cell.addEventListener('click', handleClick);
+    // });
 }
  
 // Launches the game runner after ensuring that all conditions have been met.
@@ -46,6 +46,9 @@ export function startGameListener(callback, callback2) {
         // If both succeed
         btn.innerHTML = 'NEW GAME';
         btn.removeEventListener('click', handleClick);
+        btn.addEventListener('click', () => {
+            location.reload();
+        })
         }
 
     start.addEventListener('click', handleClick);
@@ -107,3 +110,18 @@ export function randomBoardListener(callback) {
     
     btn.addEventListener('click', handleClick);
 }
+
+
+export function showWinner(winner) {
+    const modal = document.getElementById('winnerModal');
+    const messageEl = document.getElementById('winnerMessage');
+    const closeModalBtn = document.getElementById('closeModal');
+  
+    messageEl.textContent = `${winner} wins!`;
+    modal.style.display = 'flex'; // Use flex to center the modal content
+  
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+  

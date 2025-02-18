@@ -1,9 +1,7 @@
-import { Ship } from "./ship";
-import { Gameboard } from "./gameboard";
 import { Player } from "./player";
 import { createBoard } from "./createGameboard.js"
 import { getCPUBoardInfo, getPlayerBoardInfo } from "./renderGameboard.js";
-import { attackCPU, startGameListener, changeOrientation, placeShip, randomBoardListener } from "./listeners.js";
+import { attackCPU, startGameListener, changeOrientation, placeShip, randomBoardListener, showWinner } from "./listeners.js";
 import { generateShipsToPlace } from "./placeShips.js";
 import "./style.css"
 
@@ -194,9 +192,9 @@ function gameState() {
 
 function checkWinner(cpu, player) {
     if (player.board.allSunk() === true) {
-        alert("CPU")
+        showWinner("CPU")
     } else if (cpu.board.allSunk() === true) {
-        alert("PLAYER")
+        showWinner("PLAYER")
     }
 }
 
@@ -238,3 +236,5 @@ function handleOrientationChange() {
         orientation = 'horizontal'
     }
 }
+
+
