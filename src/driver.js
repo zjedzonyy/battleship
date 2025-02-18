@@ -4,15 +4,8 @@ import { Player } from "./player";
 import { createBoard } from "./createGameboard.js"
 import { getCPUBoardInfo, getPlayerBoardInfo } from "./renderGameboard.js";
 import { attackCPU, startGameListener, changeOrientation, placeShip, randomBoardListener } from "./listeners.js";
+import { generateShipsToPlace } from "./placeShips.js";
 import "./style.css"
-// 1x * * * * *
-// 1x * * * *
-// 2x * * *
-// 2x * *
-// 1x *
-
-createBoard('player-board', 10);
-createBoard('cpu-board', 10)
 
 const player = Player();
 const cpu = Player();
@@ -23,98 +16,39 @@ cpu.setIsCPU(true);
 getPlayerBoardInfo(player);
 getCPUBoardInfo(cpu);
 
+const cpuFleetConfig = generateShipsToPlace();
+const playerFleetConfig = generateShipsToPlace();
+
+let orientation = 'horizontal';
+
 function main() {
-    //Umożliwiwa ułożenie statków
+    handleBoardsRendering()
+    
+    // Allows Player to generate its fleet
     handlePlaceShip()
-    //Układa statki u CPU
-    startGameListener(startGame, populateCPUBoard);
-    randomBoardListener(populatePlayerBoard)
+    changeOrientation(handleOrientationChange)
+
+    //Generates CPU's fleet and runs game
+    startGameListener(startGame, generateFleetForCPU);
+    randomBoardListener(generateFleetForPlayer)
 
 }
 
 main()
-function populateCPUBoard() {
-    if (shipsLength.length > 0) {
+
+function startGame() {
+    // 1. Ensure that the player has placed all of its ships
+    if (playerFleetConfig.length > 0) {
         return false;
     }
 
-    let i = 0;
-    do {
-        randomPlaceShip()
-        i++;
-    } while (i <= 6);
-
-    return true;
-}
-
-function populatePlayerBoard() {
-    if (shipsLength.length > 7) {
-        return false;
-    }
-
-    let i = 0;
-    do {
-        randomPlaceShipPlayer()
-        i++;
-    } while (i <= 6);
-
-    getPlayerBoardInfo(player);
-    return true;
-}
-
-const shipsLengthCPU = [5, 4, 3, 3, 2, 2, 1];
-
-//function to place ship for cpu
-function randomPlaceShip() {
-    let placed = false;
-    do {
-        const x = Math.floor(Math.random() * 10);
-        const y = Math.floor(Math.random() * 10);
-        const length = shipsLengthCPU[0];
-        const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
-
-        try {
-            cpu.board.placeShip(x, y, length, orientation);
-            // Jeśli się udało, ustawiamy placed na true i wychodzimy z pętli
-            shipsLengthCPU.shift();
-            placed = true;
-          } catch (err) {
-            // Gdy placeShip rzuci błąd (np. brak miejsca),
-            // ignorujemy i ponawiamy losowanie w kolejnej iteracji pętli
-            placed = false;
-          }
-    } while (!placed)
-}
-
-function randomPlaceShipPlayer() {
-    let placed = false;
-    do {
-        const [x, y] = generateRandomCoordinates()
-        // const y = Math.floor(Math.random() * 10);
-        const length = shipsLength[0];
-        const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
-
-        try {
-            player.board.placeShip(x, y, length, orientation);
-            // Jeśli się udało, ustawiamy placed na true i wychodzimy z pętli
-            shipsLength.shift();
-            placed = true;
-          } catch (err) {
-            // Gdy placeShip rzuci błąd (np. brak miejsca),
-            // ignorujemy i ponawiamy losowanie w kolejnej iteracji pętli
-            placed = false;
-          }
-    } while (!placed)
-}
-
-async function startGame() {
-
-    if (shipsLength.length > 0) {
-        return false;
-    }
+    // 2. Initialize game state (manages currentPlayer and turn switching)
     let game = gameState();
+
+    // 3. Set up CPU's board event listeners for the human attack
     attackCPU(handleHumanAttack)
 
+    // 3.1 Callback for handling human's attack
     function handleHumanAttack(x,y) {
         if (game.getCurrentPlayer() !== 'human') {
             return;
@@ -122,12 +56,14 @@ async function startGame() {
         cpu.board.receiveAttack(x,y)
         getCPUBoardInfo(cpu);
         if (cpu.board.doesHit(x,y) === false) {
+            // If the human attack misses, switch turn and let CPU attack
             game.switchTurn()
             attackPlayer(handleCPUAttack)
         }
         checkWinner(cpu, player)
     }
 
+    // 3.2 Callback for handling CPU's attack
     function handleCPUAttack(x,y) {
         if (game.getCurrentPlayer() !== 'cpu') {
             return;
@@ -146,104 +82,14 @@ async function startGame() {
 }
 
 
-function gameState() {
-    let currentPlayer = 'human';
-    const switchTurn = () => {
-        if (currentPlayer === 'human') {
-            currentPlayer = 'cpu';
-        } else {
-            currentPlayer = 'human';
-        }
-    }
-    const canHumanAct = () => {
-        return currentPlayer === 'human' ? true : false
-    }
-
-    function getCurrentPlayer() {
-        return currentPlayer;
-      }
-
-    return {getCurrentPlayer, switchTurn, canHumanAct}
-}
-
-function checkWinner(cpu, player) {
-    if (player.board.allSunk() === true) {
-        alert("CPU")
-    } else if (cpu.board.allSunk() === true) {
-        alert("PLAYER")
-    }
-}
-
-//1. Zmienna
-let orientation = 'horizontal';
-//2. Callback ja zmieniajacy
-function handleOrientationChange() {
-    if (orientation === 'horizontal') {
-        orientation = 'v';
-    } else {
-        orientation = 'horizontal'
-    }
-    console.log(orientation)
-}
-
-//3. Dodanie eventListener wywolujacy callback
-changeOrientation(handleOrientationChange)
-
-
-//a) 
-// player.board.placeShip(x,y, orientation)
-
-//ShipsLength i orientation nie pobiera dynamicznie
-const shipsLength = [5, 4, 3, 3, 2, 2, 1];
-function handlePlaceShip() {
-
-    placeShip(tryPlaceShip, getShipLength, getOrientation)
-
-}
-function tryPlaceShip(x, y, length, orientation) {
-    try {
-        player.board.placeShip(x,y,length,orientation)
-        removeShip()
-        getPlayerBoardInfo(player)
-        return true;
-    } catch(err) {
-        return false;
-    } 
-}
-
-function removeShip() {
-    shipsLength.shift();
-}
-
-function getShipLength() {
-    return shipsLength[0];
-}
-
-function getOrientation() {
-    return orientation;
-}
-
-
-// chyba jest problem ze random coordinates jak strzela to rzadko znajduje cos co moze strzelic
-// i wpada w infinity loop - trzeba to poprawic
-
-// usun btn albo rozpocznij gre od nowa logika
-
-//REFACTOR KODU!!!!!!!! ZA DUZO POWTARZAJACEGO SIE KODU!
-// ODDZIELIC LOGIKE!!!
-//UI - mozna dodac legende
-
-
-
-
-
-//genrate random attack
+// Genrate random attack
 function attackPlayer(callback) {
     const [x,y] = findAllowedCell()
     callback(x,y)
-
 }
 
+
+// Returns random valid coordinates to make a shot
 function findAllowedCell() {
     let illegalShots = player.board.getMissedShots();
     let illegalShots2 = player.board.getAccurateShots();
@@ -266,4 +112,129 @@ function generateRandomCoordinates() {
     const y = Math.floor(Math.random() * 10);
 
     return [x, y]
+}
+
+function handleBoardsRendering() {
+    createBoard('player-board', 10);
+    createBoard('cpu-board', 10)
+}
+
+
+// Trying to place a ship correctly on a board till success
+function randomShipPlacement(gamester, fleetConfig) {
+    let placed = false;
+    
+    do {
+        const [x, y] = generateRandomCoordinates();
+        const length = fleetConfig[0];
+        const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+
+        try {
+            gamester.board.placeShip(x, y, length, orientation);
+            fleetConfig.shift();
+            placed = true;
+        } catch (err) {
+            placed = false
+        }
+    } while (!placed)
+}
+
+
+function generateFleetForCPU() {
+    // Prevent from starting the game before Player generate its fleet.
+    if (playerFleetConfig.length > 0) {
+        return false;
+    }
+
+    let i = 0;
+    do {
+        randomShipPlacement(cpu, cpuFleetConfig)
+        i++;
+    } while (i <= 6);
+
+    return true;
+}
+
+
+function generateFleetForPlayer() {
+    // Stop if Player already put something on the board
+    if (playerFleetConfig.length < 7) {
+        return false;
+    }
+
+    let i = 0;
+    do {
+        randomShipPlacement(player, playerFleetConfig)
+        i++;
+    } while (i <= 6);
+
+    getPlayerBoardInfo(player);
+    return true;
+}
+
+
+function gameState() {
+    let currentPlayer = 'human';
+    
+    const switchTurn = () => {
+        if (currentPlayer === 'human') {
+            currentPlayer = 'cpu';
+        } else {
+            currentPlayer = 'human';
+        }
+    }
+
+    function getCurrentPlayer() {
+        return currentPlayer;
+      }
+
+    return {getCurrentPlayer, switchTurn}
+}
+
+
+function checkWinner(cpu, player) {
+    if (player.board.allSunk() === true) {
+        alert("CPU")
+    } else if (cpu.board.allSunk() === true) {
+        alert("PLAYER")
+    }
+}
+
+
+// Handles placing ship manually
+function handlePlaceShip() {
+    placeShip(tryPlaceShip, getShipLength, getOrientation)
+}
+
+
+function tryPlaceShip(x, y, length, orientation) {
+    try {
+        player.board.placeShip(x,y,length,orientation)
+        removeShip()
+        getPlayerBoardInfo(player)
+        return true;
+    } catch(err) {
+        return false;
+    } 
+}
+
+
+function removeShip() {
+    playerFleetConfig.shift();
+}
+
+function getShipLength() {
+    return playerFleetConfig[0];
+}
+
+function getOrientation() {
+    return orientation;
+}
+
+function handleOrientationChange() {
+    if (orientation === 'horizontal') {
+        orientation = 'v';
+    } else {
+        orientation = 'horizontal'
+    }
 }

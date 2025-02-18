@@ -142,15 +142,3 @@ const validatePlaceShipParams = (x, y, length, orientation, board) => {
 
     }
 }
-
-//1 Rozbudowanie gameboard o sprawdzenie czy mozna klasc statki obok siebie/na sobie
-//2. Zrobienie testow dla 1)
-//3. Zrobienie mozliwosci wstawiania statkwo przez user
-//4. Dodanie randomowoego umieszczania statkow przez CPU
-//5. Poprawienie UI
-//6.
-// PREVENT FROM STARTING GAME BEFORE PLAYER PLACE ALL OF HIS SHIPS
-//   prevent ale potem nie chce zaczac gry -> chyba usuwa listener z btn start
-
-
-//POPRAW SIZE DO SPRAWDZANIA (JEGO SCOPE POWIEKSZYC I MODULARNOSC, zeby mozna go bylo zmienic w jednym miejscu)
